@@ -4,6 +4,7 @@ module CarlemanLinearization
 include("init.jl")
 
 # method
+include("kronecker.jl")
 include("linearization.jl")
 include("error_bounds.jl")
 
