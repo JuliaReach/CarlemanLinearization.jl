@@ -1,0 +1,4 @@
+name = "CarlemanLinearization"
+uuid = "4803f6b2-022a-4c1b-a771-522a3413ec86"
+authors = ["mforets <mforets@gmail.com>"]
+version = "0.1.0"
