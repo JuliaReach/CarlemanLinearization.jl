@@ -14,7 +14,7 @@ The following methods are available:
 
 - Construction of the Carleman embedding using sparse matrices
 - Explicit error bounds [FP17]
-- Improved error bounds for dissipative systems [FP17]
+- Improved error bounds for dissipative systems [L20]
 
 ## Example
 
