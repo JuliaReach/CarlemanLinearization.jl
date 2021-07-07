@@ -60,7 +60,7 @@ function _build_matrix_N4(F₁, F₂)
     return vcat(a, b, c, d)
 end
 
-function _build_matrix(F₁, F₂, N)
+function _build_matrix_N(F₁, F₂, N)
     @assert N >= 3 "expected N to be at least 3, got N=$N"
     n = size(F₁, 1)
 
