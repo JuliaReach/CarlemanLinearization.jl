@@ -23,8 +23,10 @@ Sparse matrix `A`.
 See references [1] and [2] of CARLIN.md.
 """
 function build_matrix(F₁, F₂, N)
-    if N < 2
-        throw(ArgumentError("expected the truncation order to be at least 2, got N=$N"))
+    if N < 1
+        throw(ArgumentError("expected the truncation order to be at least 1, got N=$N"))
+    elseif N == 1
+        _build_matrix_N1(F₁, F₂)
     elseif N == 2
         _build_matrix_N2(F₁, F₂)
     elseif N == 3
@@ -34,6 +36,10 @@ function build_matrix(F₁, F₂, N)
     else
         _build_matrix_N(F₁, F₂, N) # general case
     end
+end
+
+function _build_matrix_N1(F₁, F₂)
+    return F₁
 end
 
 function _build_matrix_N2(F₁, F₂)
