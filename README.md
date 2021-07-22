@@ -27,6 +27,7 @@ using CarlemanLinearization
 ## Related libraries
 
 - [carlin](https://github.com/mforets/carlin): Python library with similar functionality.
+- [CarlemanBurgers](https://github.com/hermankolden/CarlemanBurgers): MATLAB implementation of the classical Carleman solution of the viscous Burgers equation, used in https://arxiv.org/abs/2011.03185.
 
 ## References
 
