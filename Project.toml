@@ -1,7 +1,7 @@
 name = "CarlemanLinearization"
 uuid = "4803f6b2-022a-4c1b-a771-522a3413ec86"
 authors = ["mforets <mforets@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
