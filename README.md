@@ -16,14 +16,6 @@ The following methods are available:
 - Explicit error bounds [FP17]
 - Improved error bounds for dissipative systems [L20]
 
-## Example
-
-```julia
-using CarlemanLinearization
-
-....
-```
-
 ## Related libraries
 
 - [carlin](https://github.com/mforets/carlin): Python library with similar functionality.
