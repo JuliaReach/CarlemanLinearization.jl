@@ -1,5 +1,6 @@
 ENV["GKSwstype"] = "100"  # set 'GR environment' to 'no output' (for Travis CI)
 using Documenter, CarlemanLinearization
+using DynamicPolynomials
 
 DocMeta.setdocmeta!(CarlemanLinearization, :DocTestSetup,
                    :(using CarlemanLinearization); recursive=true)

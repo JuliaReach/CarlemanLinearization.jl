@@ -1,19 +1,24 @@
 name = "CarlemanLinearization"
 uuid = "4803f6b2-022a-4c1b-a771-522a3413ec86"
-authors = ["mforets <mforets@gmail.com>"]
-version = "0.1.1"
+authors = ["Marcelo Forets <mforets@gmail.com>",
+           "Christian Schilling <git@christianschilling.net>"]
+version = "0.2.0"
 
 [deps]
-DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
-DocStringExtensions = "0.8"
+DynamicPolynomials = "0.3"
+MultivariatePolynomials = "0.3"
+Requires = "0.5, 1.0"
 julia = "1"
 
 [extras]
+DynamicPolynomials = "7c1d4256-1411-5781-91ec-d7bc3513ac07"
+MultivariatePolynomials = "102ac46a-7ee4-5c85-9060-abc95bfdeaa3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Test", "DynamicPolynomials", "MultivariatePolynomials"]
