@@ -1,3 +1,9 @@
+# Kronecker power utils
+export kron_id,
+       kron_sandwich,
+       kron_sum,
+       kron_pow
+
 # error bounds
 export error_bound_apriori,
        convergence_radius_apriori,

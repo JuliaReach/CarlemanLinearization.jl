@@ -14,7 +14,7 @@ A `Diagonal` matrix with element `1` in the diagonal and order ``n^k``.
 
 ### Examples
 
-```julia
+```jldoctest
 julia> kron_id(2, 2)
 4×4 Diagonal{Float64,Array{Float64,1}}:
  1.0   ⋅    ⋅    ⋅
@@ -48,7 +48,7 @@ if `F` is sparse.
 
 ### Examples
 
-```julia
+```jldoctest
 julia> F = sparse([0 1; -1 0.])
 2×2 SparseMatrixCSC{Float64,Int64} with 2 stored entries:
   [2, 1]  =  -1.0
@@ -105,7 +105,7 @@ It holds that:
 - ``k = 2: F ⊗ I + I ⊗ F``
 - ``k = 3: F ⊗ I ⊗ I + I ⊗ F ⊗ I + I ⊗ I ⊗ F``
 
-```julia
+```jldoctest
 julia> F = sparse([0 1; -1 0.])
 2×2 SparseMatrixCSC{Float64,Int64} with 2 stored entries:
   [2, 1]  =  -1.0
@@ -143,3 +143,169 @@ function kron_sum(F::AbstractMatrix, k::Int)
     end
     return A
 end
+
+# ------------------------------------------------------------
+# Functionality that requires MultivariatePolynomials.jl
+# ------------------------------------------------------------
+
+function load_kron_multivariate()
+return quote
+
+import Base: findfirst, findall
+
+"""
+    kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
+
+Compute the higher order concrete Kronecker power: `x ⊗ x ⊗ ... ⊗ x`, `pow` times
+for a vector of symbolic monomials.
+
+### Input
+
+- `x`   -- polynomial variable
+- `pow` -- integer
+
+### Output
+
+Vector of multivariate monomial corresponding to `x^{⊗ pow}`.
+
+### Examples
+
+```jldoctest
+julia> using DynamicPolynomials
+
+julia> @polyvar x[1:2]
+(PolyVar{true}[x₁, x₂],)
+
+julia> x
+2-element Vector{PolyVar{true}}:
+ x₁
+ x₂
+
+julia> kron_pow(x, 2)
+4-element Vector{Monomial{true}}:
+ x₁²
+ x₁x₂
+ x₁x₂
+ x₂²
+```
+"""
+function kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
+    @assert pow > 0 "expected positive power, got $pow"
+    if pow == 1
+        return x
+    else
+        return kron(x, kron_pow(x, pow-1))
+    end
+end
+
+"""
+    findfirst(y::Vector{<:AbstractMonomialLike}, x::AbstractMonomialLike)
+
+Return the first position of the multivariate monomial ``x`` in the vector of monomials ``y``.
+
+### Input
+
+- `y` -- vector of multivariate monomials
+- `x` -- multivariate monomials
+
+### Output
+
+An integer where each integer represents the index in the array `y`
+corresponding to the first match, i.e. `y[i] == x` where `i` is the output integer,
+or `nothing` if there is no match.
+
+### Notes
+
+Let ``x = (x_1, x_2, …, x_n)`` be given, and let ``y_i = x^{[i]}``.
+Given the multi-index ``I = (i_1, i_2, …, i_n)``, this function returns the
+first position of ``x^I`` in the array ``y`` (resp. all positions using `findall`).
+
+### Examples
+
+```jldoctest
+julia> using DynamicPolynomials
+
+julia> @polyvar x[1:2]
+(PolyVar{true}[x₁, x₂],)
+
+julia> y = kron_pow(x, 2)
+4-element Array{Monomial{true},1}:
+ x₁²
+ x₁x₂
+ x₁x₂
+ x₂²
+
+julia> findfirst(y, x[1]*x[2])
+2
+```
+"""
+function findfirst(y::Vector{<:AbstractMonomialLike}, x::AbstractMonomialLike)
+    ypow = powers.(y)
+    xvars = variables(x)
+    xpow = exponents(x)
+
+    for (i, pi) in enumerate(ypow)
+        if pi.is[1] == xvars && pi.is[2] == xpow
+            return i
+        end
+    end
+    return nothing
+end
+
+"""
+    findall(y::Vector{<:AbstractMonomialLike}, x::AbstractMonomialLike)
+
+Return all positions of the multivariate monomial ``x`` in the vector of monomials ``y``.
+
+### Input
+
+- `y` -- vector of multivariate monomials
+- `x` -- multivariate monomials
+
+### Output
+
+A vector of integers where each integer represents the index in the array `y`
+corresponding to a match, i.e. `y[i] == x` for all elements `i` in the output array.
+
+### Notes
+
+Let ``x = (x_1, x_2, …, x_n)`` be given, and let ``y_i = x^{[i]}``.
+Given the multi-index ``I = (i_1, i_2, …, i_n)``, this function returns all
+positions of ``x^I`` in the array ``y`` (resp. the first position using `findfirst`).
+
+### Examples
+
+```jldoctest
+julia> using DynamicPolynomials
+
+julia> @polyvar x[1:2]
+(PolyVar{true}[x₁, x₂],)
+
+julia> y = kron_pow(x, 2)
+4-element Array{Monomial{true},1}:
+ x₁²
+ x₁x₂
+ x₁x₂
+ x₂²
+
+julia> findall(y, x[1]*x[2])
+2-element Vector{Int64}:
+ 2
+ 3
+```
+"""
+function findall(y::Vector{<:AbstractMonomialLike}, x::AbstractMonomialLike)
+    ypow = powers.(y)
+    xvars = variables(x)
+    xpow = exponents(x)
+
+    idx = Vector{Int}()
+    for (i, pi) in enumerate(ypow)
+        if pi.is[1] == xvars && pi.is[2] == xpow
+            push!(idx, i)
+        end
+    end
+    return idx
+end
+
+end end  # quote / load_kron_multivariate()
