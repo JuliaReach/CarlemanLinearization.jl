@@ -1,7 +1,5 @@
 name = "CarlemanLinearization"
 uuid = "4803f6b2-022a-4c1b-a771-522a3413ec86"
-authors = ["Marcelo Forets <mforets@gmail.com>",
-           "Christian Schilling <git@christianschilling.net>"]
 version = "0.2.0"
 
 [deps]
