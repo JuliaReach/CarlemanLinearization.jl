@@ -5,11 +5,10 @@ DocMeta.setdocmeta!(CarlemanLinearization, :DocTestSetup,
                    :(using CarlemanLinearization); recursive=true)
 
 makedocs(
-    format = Documenter.HTML(prettyurls = haskey(ENV, "GITHUB_ACTIONS"),
-                             collapselevel = 1),
     sitename = "CarlemanLinearization.jl",
-    doctest = false,
-    strict = false,
+    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true",
+                             assets = ["assets/aligned.css"]),
+    strict = true,
     pages = [
         "Home" => "index.md",
         "API Reference" => Any["Linearization" => "lib/linearization.md",
@@ -20,5 +19,6 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/JuliaReach/CarlemanLinearization.jl.git"
+    repo = "github.com/JuliaReach/CarlemanLinearization.jl.git",
+    push_preview = true
 )
