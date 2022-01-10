@@ -22,7 +22,38 @@ Sparse matrix `A`.
 
 See references [1] and [2] of CARLIN.md.
 """
-function build_matrix(F₁, F₂, N)
+function build_matrix(F₁, F₂, N; compress=true)
+    if compress
+        n = size(F1)[1]
+        monoms = generate_monomials(n, N)
+        monom_to_ind = Dict(m => i for (i, m) in enumerate(monoms))
+        result = spzeros(length(monoms), length(monoms))
+        for (ind, m) in enumerate(monoms)
+            for (i, j, c) in zip(findnz(F₁)...)
+                if m[i] > 0
+                    deriv = m
+                    if i != j
+                        deriv = m .+ Tuple((k == i) ? -1 : ((k == j) ? 1 : 0) for k in 1:n)
+                    end
+                    result[ind, monom_to_ind[deriv]] = m[i] * c
+                end
+            end
+    
+            if sum(m) < N 
+                for (i, j, c) in zip(findnz(F₂)...)
+                    j0 = ((j - 1) % n) + 1
+                    j1 = ((j - 1) ÷ n) + 1
+                    if m[i] > 0
+                        deriv = m .+ Tuple((k == i) ? -1 : ((k in [j0, j1]) ? 1 : 0) for k in 1:n)
+                        result[ind, monom_to_ind[deriv]] += m[i] * c
+                    end
+                end
+            end
+        end
+        return result
+    end
+ 
+    # No compression
     if N < 1
         throw(ArgumentError("expected the truncation order to be at least 1, got N=$N"))
     elseif N == 1
@@ -36,6 +67,29 @@ function build_matrix(F₁, F₂, N)
     else
         _build_matrix_N(F₁, F₂, N) # general case
     end
+end
+
+"""
+    generate_monomials(n, N)
+
+returns a list of n-tuples of nonegative integers with the sum at most N
+"""
+function generate_monomials(n, N)
+    if n == 1
+        return [(i,) for i in 0:N]
+    end
+    result = []
+    prev = generate_monomials(n - 1, N)
+    for p in prev 
+        for r in 0:(N - sum(p))
+            push!(result, (r, p...))
+        end
+    end
+    return result
+End
+
+function build_matrix_compressed(F1, F2, N)
+    
 end
 
 function _build_matrix_N1(F₁, F₂)
