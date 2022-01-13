@@ -14,3 +14,6 @@ export error_bound_apriori,
 
 # linearization
 export build_matrix
+
+# solving
+export _solve_CARLIN, _solve_CARLIN_resets

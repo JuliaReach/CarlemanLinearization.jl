@@ -23,12 +23,17 @@ Sparse matrix `A`.
 See references [1] and [2] of CARLIN.md.
 """
 function build_matrix(F₁, F₂, N; compress=true)
+    F₁ = sparse(F₁)
+    F₂ = sparse(F₂)
     if compress
-        n = size(F1)[1]
+        n = size(F₁)[1]
         monoms = generate_monomials(n, N)
-        monom_to_ind = Dict(m => i for (i, m) in enumerate(monoms))
-        result = spzeros(length(monoms), length(monoms))
-        for (ind, m) in enumerate(monoms)
+        # TODO: rewrite generation to avoid sorting
+        sort!(monoms, by=sum)
+        nonzero_monoms = firstrest(monoms)[2]
+        monom_to_ind = Dict(m => i for (i, m) in enumerate(nonzero_monoms))
+        result = spzeros(length(monoms) - 1, length(monoms) - 1)
+        for (ind, m) in enumerate(nonzero_monoms)
             for (i, j, c) in zip(findnz(F₁)...)
                 if m[i] > 0
                     deriv = m
@@ -44,7 +49,11 @@ function build_matrix(F₁, F₂, N; compress=true)
                     j0 = ((j - 1) % n) + 1
                     j1 = ((j - 1) ÷ n) + 1
                     if m[i] > 0
-                        deriv = m .+ Tuple((k == i) ? -1 : ((k in [j0, j1]) ? 1 : 0) for k in 1:n)
+                        deriv = [m...,]
+                        deriv[i] -= 1
+                        deriv[j0] += 1
+                        deriv[j1] += 1
+                        deriv = (deriv...,)
                         result[ind, monom_to_ind[deriv]] += m[i] * c
                     end
                 end
@@ -70,6 +79,24 @@ function build_matrix(F₁, F₂, N; compress=true)
 end
 
 """
+    lift_vector(x0, N)
+
+returns a vector of monomials in x0 (hyperrectangle) of degree at most N
+"""
+function lift_vector(x0, N)
+    monoms = generate_monomials(dim(x0), N)
+    # TODO: rewrite generation to avoid sorting
+    sort!(monoms, by=sum)
+    nonzero_monoms = firstrest(monoms)[2]
+    result = []
+    intervals = [interval(low(x0, i), high(x0, i)) for i in 1:dim(x0)]
+    for m in nonzero_monoms
+        push!(result, prod(intervals .^ m))
+    end
+    return Hyperrectangle(low=[i.lo for i in result], high=[i.hi for i in result])
+end
+
+"""
     generate_monomials(n, N)
 
 returns a list of n-tuples of nonegative integers with the sum at most N
@@ -86,7 +113,7 @@ function generate_monomials(n, N)
         end
     end
     return result
-End
+end
 
 function build_matrix_compressed(F1, F2, N)
     
