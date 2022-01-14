@@ -1,95 +1,52 @@
-function load_quadratic_matrix_form()
-return quote
+"""
+    quadratic_matrix_form(f, vars)
 
-function _get_vars_indices(eqs)
-    V = typeof(eqs[1][1])
-    x2i = Dict{V, Int}()
-    vars = Vector{V}(undef, length(eqs))
-    for i in eachindex(eqs)
-        x = eqs[i][1]
-        x in keys(x2i) && error("duplicate equation for variable `$x`")
-        vars[i] = x
-        x2i[x] = i
-    end
-    return vars, x2i
-end
+Extract the linear and quadratic matrices of a system of polynomial equations.
 
-function quadratic_matrix_form(eqs::AbstractVector)
-    vars, x2i = _get_vars_indices(eqs)
-    extvars = kron_pow(vars, 2)
-    # add all variables to each monomial (needed for compatibility later)
+### Input
+
+- `f`    -- vector of polynomials
+- `vars` -- vector of variables
+
+### Output
+
+Matrices `F1` and `F2` of size `n × n` and `n × n^2` respectively,
+such that `F1` contains the linear coefficients of the polynomial vector
+field `f` and `F2` the quadratic coefficients, which indexing that respects
+the Kronecker power `vars ⊗ vars`.
+
+### Examples
+
+TO-DO
+"""
+function quadratic_matrix_form(f, vars)
     n = length(vars)
-    for (i, ti) in enumerate(extvars)
-        z = Vector{Int}(undef, n)
-        k = 1
-        for (j, vj) in enumerate(vars)
-            if vj in ti.vars
-                z[j] = ti.z[k]  # assumes the same variable order
-                k += 1
-            else
-                z[j] = 0
-            end
-        end
-        extvars[i] = Monomial(vars, z)
-    end
-    # replace duplicates by a fresh monomial (needed for compatibility later)
-    _replace_duplicates!(extvars)
+    @assert length(f) == n
 
-    n = length(eqs)
+    # get the linear part
     F1 = zeros(n, n)
-    F2 = zeros(n, n^2)
+    update!(F1, vars, f)
 
-    @inbounds for (i, (x, dx)) in enumerate(eqs)
-        quadratic_matrix_form!(F1, F2, x, dx, x2i=x2i, vars=vars, extvars=extvars)
-    end
+    # get the quadratic part
+    F2 = zeros(n, n^2)
+    update!(F2, kron_pow(vars, 2), f)
+
     return F1, F2
 end
 
-function _replace_duplicates!(x)
-    fresh = Monomial(PolyVar{true}("___dummy___"))  # assumed to not exist
-    seen = Set()
-    @inbounds for (i, vi) in enumerate(x)
-        if vi in seen
-            x[i] = fresh
-        else
-            push!(seen, vi)
-        end
-    end
-end
-
-function _onehot(i, n)
-    v = zeros(Int, n)
-    v[i] = 1
-    return v
-end
-
-function quadratic_matrix_form!(F1, F2, x, dx; x2i, vars, extvars)
-    row = x2i[x]
-
-    # linear monomials (containing all variables for compatibility later)
-    n = length(vars)
-    lins = [Monomial(vars, _onehot(i, n)) for i in eachindex(vars)]
-
-    # find summands in extvars
-    @inbounds for summand in dx
-        polyn = DynamicPolynomials.polynomial(summand)
-        monom = DynamicPolynomials.monomial(summand.x)
-        coeff = Float64(polyn.a[1])
-        j = findfirst(lins, monom)
-        if !isnothing(j)
-            # linear term
-            F1[row, j] = coeff
-            continue
-        end
-        j = findall(extvars, monom)
-        if !isempty(j)
-            # quadratic term
-            for jj in j
-                F2[row, jj] = coeff
+function update!(Fk, xk, f)
+    n = size(Fk, 1)
+    for i in 1:n
+        monom = monomials(f[i])
+        S = Set()
+        for (j, x) in enumerate(xk)
+            # skip monomials already seen
+            x ∈ S ? continue : push!(S, x)
+            idx = findfirst(==(x), monom)
+            if !isnothing(idx)
+                Fk[i, j] = coefficient(f[i], x)
             end
-            continue
         end
     end
+    return Fk
 end
-
-end end  # quote / load_quadratic_matrix_form()
