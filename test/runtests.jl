@@ -9,3 +9,13 @@ using DynamicPolynomials
     @test findall(y, x[2]^2) == [4]
     @test findall(y, x[2]^3) == Int[]
 end
+
+@testset "Conversion from polynomial to matrix representation" begin
+    vars = @polyvar x y
+    dx = 3x + y^2
+    dy = x - y - 2.2 * x * y + x^2
+    f = [dx, dy]
+    F1, F2 = quadratic_matrix_form(f, vars)
+    @test F1 == [3.0 0; 1 -1]
+    @test F2 == [0.0 0 0 1; 1 -2.2 0 0]
+end
