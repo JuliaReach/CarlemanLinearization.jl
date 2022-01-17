@@ -1,16 +1,5 @@
-# ======================
-# Hard dependencies
-# ======================
+using LinearAlgebra, SparseArrays
 
-using LinearAlgebra, SparseArrays, Requires
-
-# ======================
-# Optional dependencies
-# ======================
-
-using Requires
-
-function __init__()
-    # tools for symbolic algebra
-    @require MultivariatePolynomials = "102ac46a-7ee4-5c85-9060-abc95bfdeaa3" include("init_MultivariatePolynomials.jl")
-end
+using MultivariatePolynomials: AbstractVariable, AbstractMonomialLike,
+      exponents, variables, powers, monomials, coefficient
+      

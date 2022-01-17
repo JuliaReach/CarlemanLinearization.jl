@@ -6,8 +6,10 @@
 # - [1] Forets, Marcelo, and Amaury Pouly. "Explicit error bounds for carleman linearization."
 #       arXiv preprint arXiv:1711.02552 (2017).
 #
-# - [2] Liu, J. P., Kolden, H. Ø., Krovi, H. K., Loureiro, N. F., Trivisa, K., & Childs, A. M. (2020).
-#       Efficient quantum algorithm for dissipative nonlinear differential equations. arXiv preprint arXiv:2011.03185.
+# - [2] Liu, J. P., Kolden, H. Ø., Krovi, H. K., Loureiro, N. F., Trivisa, K., & Childs,7
+#       A. M. (2021). "Efficient quantum algorithm for dissipative nonlinear differential equations."
+#       Proceedings of the National Academy of Sciences, 118(35). arXiv preprint arXiv:2011.03185.
+#
 # =========================================================================================================================
 
 # --- Error bounds using a priori estimate from [1] ---

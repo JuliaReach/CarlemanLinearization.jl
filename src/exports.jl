@@ -14,3 +14,6 @@ export error_bound_apriori,
 
 # linearization
 export build_matrix
+
+# conversion between polynomial forms
+export quadratic_matrix_form
