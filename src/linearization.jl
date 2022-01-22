@@ -13,6 +13,7 @@ system ``x' = F₁x + F₂(x⊗x)``, truncated at order ``N``.
 - `F₁` -- sparse matrix of size ``n × n``
 - `F₂` -- sparse matrix of size ``n × n^2``
 - `N`  -- integer representing the truncation order, should be at least two
+- `compress` -- if `true` produces the matrix corresponding to the commutative monomials only
 
 ### Output
 
@@ -28,8 +29,6 @@ function build_matrix(F₁, F₂, N; compress=false)
     if compress
         n = size(F₁)[1]
         monoms = generate_monomials(n, N)
-        # TODO: rewrite generation to avoid sorting
-        sort!(monoms, by=sum)
         nonzero_monoms = firstrest(monoms)[2]
         monom_to_ind = Dict(m => i for (i, m) in enumerate(nonzero_monoms))
         result = spzeros(length(monoms) - 1, length(monoms) - 1)
@@ -85,8 +84,6 @@ returns a vector of monomials in x0 (hyperrectangle) of degree at most N
 """
 function lift_vector(x0, N)
     monoms = generate_monomials(dim(x0), N)
-    # TODO: rewrite generation to avoid sorting
-    sort!(monoms, by=sum)
     nonzero_monoms = firstrest(monoms)[2]
     result = []
     intervals = [interval(low(x0, i), high(x0, i)) for i in 1:dim(x0)]
@@ -99,7 +96,8 @@ end
 """
     generate_monomials(n, N)
 
-returns a list of n-tuples of nonegative integers with the sum at most N
+returns a list of n-tuples of nonegative integers with the sum at most N 
+ordered by the total degree
 """
 function generate_monomials(n, N)
     if n == 1
@@ -107,9 +105,10 @@ function generate_monomials(n, N)
     end
     result = []
     prev = generate_monomials(n - 1, N)
-    for p in prev 
-        for r in 0:(N - sum(p))
-            push!(result, (r, p...))
+    for ord 0:N
+        pind = 1
+        while sum(prev[pind]) <= ord
+            push!(result, (ord - sum(prev[ind]), prev[ind]...))
         end
     end
     return result
