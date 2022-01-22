@@ -198,6 +198,8 @@ function kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
     end
 end
 
+kron_pow(x::NTuple, pow::Int) = kron_pow([xi for xi in x], pow)
+
 """
     findfirst(y::Vector{<:AbstractMonomialLike}, x::AbstractMonomialLike)
 

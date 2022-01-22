@@ -7,7 +7,7 @@ include("init.jl")
 include("kronecker.jl")
 include("linearization.jl")
 include("error_bounds.jl")
-include("solve.jl")
+include("conversion.jl")
 
 # exported methods and types
 include("exports.jl")
