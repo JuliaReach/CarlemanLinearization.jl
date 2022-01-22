@@ -22,7 +22,7 @@ Sparse matrix `A`.
 
 See references [1] and [2] of CARLIN.md.
 """
-function build_matrix(F₁, F₂, N; compress=true)
+function build_matrix(F₁, F₂, N; compress=false)
     F₁ = sparse(F₁)
     F₂ = sparse(F₂)
     if compress
