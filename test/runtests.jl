@@ -1,21 +1,54 @@
-using Test, CarlemanLinearization
+using Test
 using DynamicPolynomials
+using CarlemanLinearization: generate_monomials, build_matrix
 
-@testset "Kronecker power (symbolic)" begin
-    @polyvar x[1:2]
-    y = kron_pow(x, 2)
-    @test findall(y, x[1]*x[2]) == [2, 3]
-    @test findall(y, x[1]^2) == [1]
-    @test findall(y, x[2]^2) == [4]
-    @test findall(y, x[2]^3) == Int[]
+#@testset "Kronecker power (symbolic)" begin
+#    @polyvar x[1:2]
+#    y = kron_pow(x, 2)
+#    @test findall(y, x[1]*x[2]) == [2, 3]
+#    @test findall(y, x[1]^2) == [1]
+#    @test findall(y, x[2]^2) == [4]
+#    @test findall(y, x[2]^3) == Int[]
+#end
+
+#@testset "Conversion from polynomial to matrix representation" begin
+#    vars = @polyvar x y
+#    dx = 3x + y^2
+#    dy = x - y - 2.2 * x * y + x^2
+#    f = [dx, dy]
+#    F1, F2 = quadratic_matrix_form(f, vars)
+#    @test F1 == [3.0 0; 1 -1]
+#    @test F2 == [0.0 0 0 1; 1 -2.2 0 0]
+#end
+
+@testset "Generating all commutative monomials" begin
+    for (n, D) in [(3, 0), (3, 1), (3, 2), (5, 3), (5, 10)]
+        monomials = generate_monomials(n, D)
+        # No reprtitions
+        @test length(monomials) == length(Set(monomials))
+        # Correct size
+        @test length(monomials) == binomial(n + D, n)
+        # Nonnegativity
+        @test all([sum(m) == sum(map(abs, m)) for m in monomials])
+        # ordering
+        @test all([sum(monomials[i - 1]) <= sum(monomials[i]) for i in 2:length(monomials)])
+        # not exceeding D
+        @test sum(monomials[end]) == D
+    end
 end
 
-@testset "Conversion from polynomial to matrix representation" begin
-    vars = @polyvar x y
-    dx = 3x + y^2
-    dy = x - y - 2.2 * x * y + x^2
-    f = [dx, dy]
-    F1, F2 = quadratic_matrix_form(f, vars)
-    @test F1 == [3.0 0; 1 -1]
-    @test F2 == [0.0 0 0 1; 1 -2.2 0 0]
+@testset "Compressed matrices" begin
+    F1 = [3.0 0; 1 -1]
+    F2 = [0.0 0 0 1; 1 -2.2 0 0]
+    result = build_matrix(F1, F2, 1; compress = true)
+    @test result == F1
+
+    result = build_matrix(F1, F2, 2; compress = true)
+    @test result == [
+        3. 0. 0. 0. 1.;
+        1. -1. 1. -2.2 0;
+        0 0 6. 0 0;
+        0 0 1. -1. 0;
+        0 0 0 2. -2.
+    ]
 end

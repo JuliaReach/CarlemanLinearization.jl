@@ -10,9 +10,7 @@ using ReachabilityAnalysis
 using LazySets.Arrays
 
 # functions for Kronecker powers and sums
-#using ReachabilityAnalysis: kron_pow, kron_pow_stack
-using ReachabilityAnalysis: ReachSolution, LGG09
-
+using ReachabilityAnalysis: kron_pow, kron_pow_stack
 
 # ======================
 # Optional dependencies

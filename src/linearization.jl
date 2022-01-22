@@ -105,10 +105,11 @@ function generate_monomials(n, N)
     end
     result = []
     prev = generate_monomials(n - 1, N)
-    for ord 0:N
+    for ord in 0:N
         pind = 1
-        while sum(prev[pind]) <= ord
-            push!(result, (ord - sum(prev[ind]), prev[ind]...))
+        while pind <= length(prev) && sum(prev[pind]) <= ord
+            push!(result, (ord - sum(prev[pind]), prev[pind]...))
+            pind += 1
         end
     end
     return result
