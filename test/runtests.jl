@@ -1,25 +1,26 @@
 using Test
 using DynamicPolynomials
-using CarlemanLinearization: generate_monomials, build_matrix
+using MultivariatePolynomials
+using CarlemanLinearization: generate_monomials, build_matrix, quadratic_matrix_form, kron_pow
 
-#@testset "Kronecker power (symbolic)" begin
-#    @polyvar x[1:2]
-#    y = kron_pow(x, 2)
-#    @test findall(y, x[1]*x[2]) == [2, 3]
-#    @test findall(y, x[1]^2) == [1]
-#    @test findall(y, x[2]^2) == [4]
-#    @test findall(y, x[2]^3) == Int[]
-#end
+@testset "Kronecker power (symbolic)" begin
+    @polyvar x[1:2]
+    y = kron_pow(x, 2)
+    @test findall(y, x[1]*x[2]) == [2, 3]
+    @test findall(y, x[1]^2) == [1]
+    @test findall(y, x[2]^2) == [4]
+    @test findall(y, x[2]^3) == Int[]
+end
 
-#@testset "Conversion from polynomial to matrix representation" begin
-#    vars = @polyvar x y
-#    dx = 3x + y^2
-#    dy = x - y - 2.2 * x * y + x^2
-#    f = [dx, dy]
-#    F1, F2 = quadratic_matrix_form(f, vars)
-#    @test F1 == [3.0 0; 1 -1]
-#    @test F2 == [0.0 0 0 1; 1 -2.2 0 0]
-#end
+@testset "Conversion from polynomial to matrix representation" begin
+    vars = @polyvar x y
+    dx = 3x + y^2
+    dy = x - y - 2.2 * x * y + x^2
+    f = [dx, dy]
+    F1, F2 = quadratic_matrix_form(f, vars)
+    @test F1 == [3.0 0; 1 -1]
+    @test F2 == [0.0 0 0 1; 1 -2.2 0 0]
+end
 
 @testset "Generating all commutative monomials" begin
     for (n, D) in [(3, 0), (3, 1), (3, 2), (5, 3), (5, 10)]

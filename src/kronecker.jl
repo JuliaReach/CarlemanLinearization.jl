@@ -189,7 +189,7 @@ julia> kron_pow(x, 2)
  x₂²
 ```
 """
-function kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
+function ReachabilityAnalysis.kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
     @assert pow > 0 "expected positive power, got $pow"
     if pow == 1
         return x
@@ -198,7 +198,7 @@ function kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
     end
 end
 
-kron_pow(x::NTuple, pow::Int) = kron_pow([xi for xi in x], pow)
+ReachabilityAnalysis.kron_pow(x::NTuple, pow::Int) = ReachabilityAnalysis.kron_pow([xi for xi in x], pow)
 
 """
     findfirst(y::Vector{<:AbstractMonomialLike}, x::AbstractMonomialLike)
