@@ -13,7 +13,4 @@ export error_bound_apriori,
        convergence_radius_specabs
 
 # linearization
-export build_matrix
-
-# solving
-export _solve_CARLIN, _solve_CARLIN_resets
+export build_matrix, lift_vector 
