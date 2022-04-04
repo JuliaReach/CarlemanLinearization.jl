@@ -88,6 +88,8 @@ function lift_vector(x0, N)
     result = []
     intervals = [interval(low(x0, i), high(x0, i)) for i in 1:dim(x0)]
     for m in nonzero_monoms
+        println(m)
+        println(prod(intervals .^ m))
         push!(result, prod(intervals .^ m))
     end
     return Hyperrectangle(low=[i.lo for i in result], high=[i.hi for i in result])
