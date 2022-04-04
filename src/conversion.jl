@@ -1,6 +1,3 @@
-function load_quadratic_matrix_form()
-return quote
-
 """
     quadratic_matrix_form(f, vars)
 
@@ -53,5 +50,3 @@ function update!(Fk, xk, f)
     end
     return Fk
 end
-
-end end  # quote / load_quadratic_matrix_form()

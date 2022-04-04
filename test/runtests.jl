@@ -6,10 +6,10 @@ using CarlemanLinearization: generate_monomials, build_matrix, quadratic_matrix_
 @testset "Kronecker power (symbolic)" begin
     @polyvar x[1:2]
     y = kron_pow(x, 2)
-    @test findall(y, x[1]*x[2]) == [2, 3]
-    @test findall(y, x[1]^2) == [1]
-    @test findall(y, x[2]^2) == [4]
-    @test findall(y, x[2]^3) == Int[]
+    @test findall(==(x[1]*x[2]), y) == [2, 3]
+    @test findall(==(x[1]^2), y) == [1]
+    @test findall(==(x[2]^2), y) == [4]
+    @test findall(==(x[2]^3), y) == Int[]
 end
 
 @testset "Conversion from polynomial to matrix representation" begin
