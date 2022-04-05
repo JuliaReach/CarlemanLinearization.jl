@@ -1,7 +1,8 @@
 using Test
 using DynamicPolynomials
 using MultivariatePolynomials
-using CarlemanLinearization: generate_monomials, build_matrix, quadratic_matrix_form, kron_pow
+using LazySets: Hyperrectangle, low, high
+using CarlemanLinearization: generate_monomials, build_matrix, quadratic_matrix_form, kron_pow, lift_vector
 
 @testset "Kronecker power (symbolic)" begin
     @polyvar x[1:2]
@@ -52,4 +53,13 @@ end
         0 0 1. -1. 0;
         0 0 0 2. -2.
     ]
+end
+
+@testset "Lifting vectors" begin
+    x0 = Hyperrectangle(low=[0, 1, -1], high=[1, 2, 3])
+    N = 2
+    lifted = lift_vector(x0, N)
+    println(zip(low(lifted), high(lifted)))
+    sides = Set(zip(low(lifted), high(lifted)))
+    @test sides == Set{Tuple{Rational, Rational}}([(0, 1), (1, 2), (-1, 3), (0, 1), (1, 4), (0, 9), (0, 2), (-1, 3), (-2, 6)])
 end
