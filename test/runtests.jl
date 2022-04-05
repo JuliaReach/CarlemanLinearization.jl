@@ -56,10 +56,10 @@ end
 end
 
 @testset "Lifting vectors" begin
-    x0 = Hyperrectangle(low=[0, 1, -1], high=[1, 3//2, 3//10])
+    x0 = Hyperrectangle(low=[0, 1, -1], high=[1, 2, 3])
     N = 2
     lifted = lift_vector(x0, N)
     println(zip(low(lifted), high(lifted)))
     sides = Set(zip(low(lifted), high(lifted)))
-    @test sides == Set{Tuple{Rational, Rational}}([(0, 1), (1, 3//2), (-1, 3//10), (0, 1), (1, 9//4), (-3//10, 1), (0, 3//2), (-1, 3//10), (-3//2, 9//20)])
+    @test sides == Set{Tuple{Rational, Rational}}([(0, 1), (1, 2), (-1, 3), (0, 1), (1, 4), (0, 9), (0, 2), (-1, 3), (-2, 6)])
 end
