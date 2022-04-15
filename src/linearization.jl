@@ -3,7 +3,7 @@
 # ======================================
 
 """
-    build_matrix(F₁, F₂, N)
+    build_matrix(F₁, F₂, N; compress=false)
 
 Compute the Carleman linearization matrix associated to the quadratic
 system ``x' = F₁x + F₂(x⊗x)``, truncated at order ``N``.
@@ -26,39 +26,8 @@ See references [1] and [2] of CARLIN.md.
 function build_matrix(F₁, F₂, N; compress=false)
     F₁ = sparse(F₁)
     F₂ = sparse(F₂)
-    if compress
-        n = size(F₁)[1]
-        monoms = generate_monomials(n, N)
-        nonzero_monoms = firstrest(monoms)[2]
-        monom_to_ind = Dict(m => i for (i, m) in enumerate(nonzero_monoms))
-        result = spzeros(length(monoms) - 1, length(monoms) - 1)
-        for (ind, m) in enumerate(nonzero_monoms)
-            for (i, j, c) in zip(findnz(F₁)...)
-                if m[i] > 0
-                    deriv = m
-                    if i != j
-                        deriv = m .+ Tuple((k == i) ? -1 : ((k == j) ? 1 : 0) for k in 1:n)
-                    end
-                    result[ind, monom_to_ind[deriv]] = m[i] * c
-                end
-            end
-    
-            if sum(m) < N 
-                for (i, j, c) in zip(findnz(F₂)...)
-                    j0 = ((j - 1) % n) + 1
-                    j1 = ((j - 1) ÷ n) + 1
-                    if m[i] > 0
-                        deriv = [m...,]
-                        deriv[i] -= 1
-                        deriv[j0] += 1
-                        deriv[j1] += 1
-                        deriv = (deriv...,)
-                        result[ind, monom_to_ind[deriv]] += m[i] * c
-                    end
-                end
-            end
-        end
-        return result
+    if N > 1 && compress
+        return build_matrix_compressed(F₁, F₂, N)
     end
  
     # No compression
@@ -78,15 +47,67 @@ function build_matrix(F₁, F₂, N; compress=false)
 end
 
 """
-    lift_vector(x0, N)
+    build_matrix_compressed(F₁, F₂, N)
 
-returns a vector of monomials in x0 (hyperrectangle) of degree at most N
+Compute the compressed Carleman linearization matrix associated to the quadratic
+system ``x' = F₁x + F₂(x⊗x)``, truncated at order ``N``.
+
+Input & Output are the same as for build_matrix
 """
-function lift_vector(x0, N)
-    monoms = generate_monomials(dim(x0), N)
+function build_matrix_compressed(F₁, F₂, N)
+    n = size(F₁)[1]
+    monoms = generate_monomials(n, N)
+    nonzero_monoms = firstrest(monoms)[2]
+    monom_to_ind = Dict(m => i for (i, m) in enumerate(nonzero_monoms))
+    result = spzeros(length(monoms) - 1, length(monoms) - 1)
+    # Nonzero linear/quadratic monomials in the right-hand side
+    linear_rhs, quadratic_rhs = findnz(F₁), findnz(F₂)
+    for (ind, m) in enumerate(nonzero_monoms)
+        # for a given monomial m of degree d, we compute the degree-d part of 
+        # its derivative m' using the linear part, F₁, of the ode system
+        for (i, j, c) in zip(linear_rhs...)
+            if m[i] > 0
+                deriv = m
+                if i != j
+                    deriv = m .+ Tuple((k == i) ? -1 : ((k == j) ? 1 : 0) for k in 1:n)
+                end
+                result[ind, monom_to_ind[deriv]] = m[i] * c
+            end
+        end
+
+        # for a given monomial m of degree d, we compute the degree-(d + 1) part of 
+        # its derivative m' using the linear part, F₂, of the ode system
+        if sum(m) < N 
+            for (i, j, c) in zip(quadratic_rhs...)
+                # extracting the indices of the variables corresponding to the degree-2
+                # monomial corresponding to the j-th column of F₂
+                j0 = ((j - 1) % n) + 1
+                j1 = ((j - 1) ÷ n) + 1
+                if m[i] > 0
+                    deriv = [m...,]
+                    deriv[i] -= 1
+                    deriv[j0] += 1
+                    deriv[j1] += 1
+                    deriv = (deriv...,)
+                    result[ind, monom_to_ind[deriv]] += m[i] * c
+                end
+            end
+        end
+    end
+    return result
+
+end
+
+"""
+    lift_vector(X0, N)
+
+returns a vector of monomials in X0 (hyperrectangle) of degree at most N
+"""
+function lift_vector(X0, N)
+    monoms = generate_monomials(dim(X0), N)
     nonzero_monoms = firstrest(monoms)[2]
     result = []
-    intervals = [interval(low(x0, i), high(x0, i)) for i in 1:dim(x0)]
+    intervals = [interval(low(X0, i), high(X0, i)) for i in 1:dim(X0)]
     for m in nonzero_monoms
         push!(result, prod(intervals .^ m))
     end
@@ -97,7 +118,7 @@ end
     generate_monomials(n, N)
 
 returns a list of n-tuples of nonegative integers with the sum at most N 
-ordered by the total degree
+ordered by the total degree (no other guarantees on the ordering)
 """
 function generate_monomials(n, N)
     if n == 1
@@ -113,10 +134,6 @@ function generate_monomials(n, N)
         end
     end
     return result
-end
-
-function build_matrix_compressed(F1, F2, N)
-    
 end
 
 function _build_matrix_N1(F₁, F₂)
