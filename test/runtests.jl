@@ -1,8 +1,9 @@
 using Test, CarlemanLinearization
-using DynamicPolynomials
-using MultivariatePolynomials
+using DynamicPolynomials, MultivariatePolynomials
+
 using LazySets: Hyperrectangle, low, high
-using CarlemanLinearization: generate_monomials, build_matrix, quadratic_matrix_form, kron_pow, lift_vector
+using CarlemanLinearization: generate_monomials, build_matrix, kron_pow,
+      quadratic_matrix_form, lift_vector
 
 @testset "Kronecker power (symbolic)" begin
     @polyvar x[1:2]
@@ -26,7 +27,7 @@ end
 @testset "Generating all commutative monomials" begin
     for (n, D) in [(3, 0), (3, 1), (3, 2), (5, 3), (5, 10)]
         monomials = generate_monomials(n, D)
-        # No reprtitions
+        # No repetitions
         @test length(monomials) == length(Set(monomials))
         # Correct size
         @test length(monomials) == binomial(n + D, n)

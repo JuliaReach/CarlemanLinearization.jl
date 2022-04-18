@@ -52,18 +52,19 @@ end
 Compute the compressed Carleman linearization matrix associated to the quadratic
 system ``x' = F₁x + F₂(x⊗x)``, truncated at order ``N``.
 
-Input & Output are the same as for build_matrix
+Input & Output are the same as for `build_matrix`.
 """
 function build_matrix_compressed(F₁, F₂, N)
     n = size(F₁)[1]
     monoms = generate_monomials(n, N)
-    nonzero_monoms = firstrest(monoms)[2]
-    monom_to_ind = Dict(m => i for (i, m) in enumerate(nonzero_monoms))
+    # skip the first monomial, which is always the constant 1
+    nonfirst_monoms = firstrest(monoms)[2]
+    monom_to_ind = Dict(m => i for (i, m) in enumerate(nonfirst_monoms))
     result = spzeros(length(monoms) - 1, length(monoms) - 1)
-    # Nonzero linear/quadratic monomials in the right-hand side
+    # linear/quadratic monomials on the right-hand side
     linear_rhs, quadratic_rhs = findnz(F₁), findnz(F₂)
-    for (ind, m) in enumerate(nonzero_monoms)
-        # for a given monomial m of degree d, we compute the degree-d part of 
+    for (ind, m) in enumerate(nonfirst_monoms)
+        # for a given monomial m of degree d, we compute the degree-d part of
         # its derivative m' using the linear part, F₁, of the ode system
         for (i, j, c) in zip(linear_rhs...)
             if m[i] > 0
@@ -75,12 +76,12 @@ function build_matrix_compressed(F₁, F₂, N)
             end
         end
 
-        # for a given monomial m of degree d, we compute the degree-(d + 1) part of 
-        # its derivative m' using the linear part, F₂, of the ode system
-        if sum(m) < N 
+        # for a given monomial m of degree d, we compute the degree-(d + 1) part
+        # of its derivative m' using the linear part, F₂, of the ode system
+        if sum(m) < N
             for (i, j, c) in zip(quadratic_rhs...)
-                # extracting the indices of the variables corresponding to the degree-2
-                # monomial corresponding to the j-th column of F₂
+                # extracting the indices of the variables corresponding to the
+                # degree-2 monomial corresponding to the j-th column of F₂
                 j0 = ((j - 1) % n) + 1
                 j1 = ((j - 1) ÷ n) + 1
                 if m[i] > 0
@@ -95,20 +96,22 @@ function build_matrix_compressed(F₁, F₂, N)
         end
     end
     return result
-
 end
 
 """
     lift_vector(X0, N)
 
-returns a vector of monomials in X0 (hyperrectangle) of degree at most N
+Return a vector of monomials in `X0` (hyperrectangle) of degree at most `N`.
 """
 function lift_vector(X0, N)
+    @assert isdefined(@__MODULE__, :LazySets) "package " *
+        "'LazySets' not loaded (it is required for executing `lift_vector`)"
+
     monoms = generate_monomials(dim(X0), N)
-    nonzero_monoms = firstrest(monoms)[2]
+    nonfirst_monoms = firstrest(monoms)[2]
     result = []
     intervals = [interval(low(X0, i), high(X0, i)) for i in 1:dim(X0)]
-    for m in nonzero_monoms
+    for m in nonfirst_monoms
         push!(result, prod(intervals .^ m))
     end
     return Hyperrectangle(low=[i.lo for i in result], high=[i.hi for i in result])
@@ -117,8 +120,8 @@ end
 """
     generate_monomials(n, N)
 
-returns a list of n-tuples of nonegative integers with the sum at most N 
-ordered by the total degree (no other guarantees on the ordering)
+Return a list of `n`-tuples of nonegative integers with the sum at most `N`,
+ordered by the total degree (no other guarantees on the ordering).
 """
 function generate_monomials(n, N)
     if n == 1
