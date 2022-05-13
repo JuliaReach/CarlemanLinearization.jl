@@ -1,6 +1,6 @@
 name = "CarlemanLinearization"
 uuid = "4803f6b2-022a-4c1b-a771-522a3413ec86"
-version = "0.3.1"
+version = "0.3.2"
 
 [deps]
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
