@@ -12,7 +12,7 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 [compat]
 DynamicPolynomials = "0.3, 0.4"
 IterTools = "1"
-LazySets = "1"
+LazySets = "1, 2"
 MultivariatePolynomials = "0.3, 0.4"
 Requires = "0.5, 1"
 julia = "1.4"
