@@ -13,7 +13,7 @@ export error_bound_apriori,
        convergence_radius_specabs
 
 # linearization
-export build_matrix, lift_vector 
+export build_matrix, lift_vector
 
 # conversion between polynomial forms
 export quadratic_matrix_form

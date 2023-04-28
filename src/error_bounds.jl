@@ -35,7 +35,7 @@ function convergence_radius_apriori(α, F₁, F₂; N)
         return Inf
     end
     β = α * F₂ / μF₁
-    T = (1/μF₁) * log(1 + 1/β)
+    T = (1 / μF₁) * log(1 + 1 / β)
     return T
 end
 
@@ -59,7 +59,7 @@ function convergence_radius_pseries(x₀, F₁, F₂; N)
     nF₂ = opnorm(F₂, Inf)
     β₀ = nx₀ * nF₂ / nF₁
 
-    T = (1/nF₁) * log(1 + 1/β₀)
+    T = (1 / nF₁) * log(1 + 1 / β₀)
     return T
 end
 
@@ -71,7 +71,7 @@ function _error_bound_specabs_R(x₀, F₁, F₂; check=true)
     nF₂ = opnorm(F₂, 2)
 
     # compute eigenvalues and sort them by increasing real part
-    λ = eigvals(F₁, sortby=real)
+    λ = eigvals(F₁; sortby=real)
     λ₁ = last(λ)
     Re_λ₁ = real(λ₁)
     if check
@@ -108,7 +108,7 @@ function convergence_radius_specabs(x₀, F₁, F₂; check=true)
         nx₀ = norm(x₀, 2)
         nF₂ = opnorm(F₂, 2)
         β = nx₀ * nF₂
-        T = 1/β
+        T = 1 / β
     else
         throw(ArgumentError("expected spectral abscissa to be negative or zero, got $Re_λ₁"))
     end

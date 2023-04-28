@@ -133,7 +133,7 @@ function kron_sum(F::AbstractMatrix, k::Int)
 
     n = size(F, 1) # leading dimension
     k1 = 0 # terms on the left of F
-    k2 = k-1 # terms on the right of F
+    k2 = k - 1 # terms on the right of F
     A = kron_sandwich(F, n, k1, k2)  # I^(⊗k1) ⊗ F ⊗ I^(⊗k2)
     for i in 2:k
         k1 += 1
@@ -185,7 +185,7 @@ function kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
     if pow == 1
         return x
     else
-        return kron(x, kron_pow(x, pow-1))
+        return kron(x, kron_pow(x, pow - 1))
     end
 end
 
