@@ -29,7 +29,7 @@ function build_matrix(F₁, F₂, N; compress=false)
     if N > 1 && compress
         return build_matrix_compressed(F₁, F₂, N)
     end
- 
+
     # No compression
     if N < 1
         throw(ArgumentError("expected the truncation order to be at least 1, got N=$N"))
@@ -85,7 +85,7 @@ function build_matrix_compressed(F₁, F₂, N)
                 j0 = ((j - 1) % n) + 1
                 j1 = ((j - 1) ÷ n) + 1
                 if m[i] > 0
-                    deriv = [m...,]
+                    deriv = [m...]
                     deriv[i] -= 1
                     deriv[j0] += 1
                     deriv[j1] += 1
@@ -104,8 +104,8 @@ end
 Return a vector of monomials in `X0` (hyperrectangle) of degree at most `N`.
 """
 function lift_vector(X0, N)
-    @assert isdefined(@__MODULE__, :LazySets) "package " *
-        "'LazySets' not loaded (it is required for executing `lift_vector`)"
+    @assert isdefined(@__MODULE__, :LazySets) "package `LazySets` not loaded (it is required " *
+                                              "for executing `lift_vector`)"
 
     monoms = generate_monomials(dim(X0), N)
     nonfirst_monoms = firstrest(monoms)[2]
@@ -114,7 +114,7 @@ function lift_vector(X0, N)
     for m in nonfirst_monoms
         push!(result, prod(intervals .^ m))
     end
-    return Hyperrectangle(low=[i.lo for i in result], high=[i.hi for i in result])
+    return Hyperrectangle(; low=[i.lo for i in result], high=[i.hi for i in result])
 end
 
 """
@@ -175,19 +175,19 @@ function _build_matrix_N(F₁, F₂, N)
     for j in 1:N
         if j == N
             F12_j = kron_sum(F₁, j)
-            Zleft_j = spzeros(n^j, sum(n^i for i in 1:j-1))
+            Zleft_j = spzeros(n^j, sum(n^i for i in 1:(j - 1)))
             push!(out, hcat(Zleft_j, F12_j))
         else
             F12_j = hcat(kron_sum(F₁, j), kron_sum(F₂, j))
             if j == 1
-                Zright_j = spzeros(n^j, sum(n^i for i in j+2:N))
+                Zright_j = spzeros(n^j, sum(n^i for i in (j + 2):N))
                 push!(out, hcat(F12_j, Zright_j))
-            elseif j == N-1
-                Zleft_j = spzeros(n^j, sum(n^i for i in 1:j-1))
+            elseif j == N - 1
+                Zleft_j = spzeros(n^j, sum(n^i for i in 1:(j - 1)))
                 push!(out, hcat(Zleft_j, F12_j))
             else # general case
-                Zleft_j = spzeros(n^j, sum(n^i for i in 1:j-1))
-                Zright_j = spzeros(n^j, sum(n^i for i in j+2:N))
+                Zleft_j = spzeros(n^j, sum(n^i for i in 1:(j - 1)))
+                Zright_j = spzeros(n^j, sum(n^i for i in (j + 2):N))
                 push!(out, hcat(Zleft_j, F12_j, Zright_j))
             end
         end
