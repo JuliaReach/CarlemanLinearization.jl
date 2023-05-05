@@ -3,12 +3,12 @@ using DynamicPolynomials, MultivariatePolynomials
 
 using LazySets: Hyperrectangle, low, high
 using CarlemanLinearization: generate_monomials, build_matrix, kron_pow,
-      quadratic_matrix_form, lift_vector
+                             quadratic_matrix_form, lift_vector
 
 @testset "Kronecker power (symbolic)" begin
     @polyvar x[1:2]
     y = kron_pow(x, 2)
-    @test findall(==(x[1]*x[2]), y) == [2, 3]
+    @test findall(==(x[1] * x[2]), y) == [2, 3]
     @test findall(==(x[1]^2), y) == [1]
     @test findall(==(x[2]^2), y) == [4]
     @test findall(==(x[2]^3), y) == Int[]
@@ -43,23 +43,23 @@ end
 @testset "Compressed matrices" begin
     F1 = [3.0 0; 1 -1]
     F2 = [0.0 0 0 1; 1 -2.2 0 0]
-    result = build_matrix(F1, F2, 1; compress = true)
+    result = build_matrix(F1, F2, 1; compress=true)
     @test result == F1
 
-    result = build_matrix(F1, F2, 2; compress = true)
-    @test result == [
-        3. 0. 0. 0. 1.;
-        1. -1. 1. -2.2 0;
-        0 0 6. 0 0;
-        0 0 1. -1. 0;
-        0 0 0 2. -2.
-    ]
+    result = build_matrix(F1, F2, 2; compress=true)
+    @test result == [3.0 0.0 0.0 0.0 1.0;
+                     1.0 -1.0 1.0 -2.2 0;
+                     0 0 6.0 0 0;
+                     0 0 1.0 -1.0 0;
+                     0 0 0 2.0 -2.0]
 end
 
 @testset "Lifting vectors" begin
-    x0 = Hyperrectangle(low=[0, 1, -1], high=[1, 2, 3])
+    x0 = Hyperrectangle(; low=[0, 1, -1], high=[1, 2, 3])
     N = 2
     lifted = lift_vector(x0, N)
     sides = Set(zip(low(lifted), high(lifted)))
-    @test sides == Set{Tuple{Rational, Rational}}([(0, 1), (1, 2), (-1, 3), (0, 1), (1, 4), (0, 9), (0, 2), (-1, 3), (-2, 6)])
+    @test sides ==
+          Set{Tuple{Rational,Rational}}([(0, 1), (1, 2), (-1, 3), (0, 1), (1, 4), (0, 9), (0, 2),
+                                         (-1, 3), (-2, 6)])
 end
