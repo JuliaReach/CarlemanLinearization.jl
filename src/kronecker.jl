@@ -72,7 +72,7 @@ function kron_sandwich(F::AbstractMatrix, n::Int, k1::Int, k2::Int)
         AF = F
     else
         A = kron_id(n, k1)
-        AF = kron(A, F)
+        AF = LinearAlgebra.kron(A, F)
     end
 
     # compute A ⊗ F ⊗ C
@@ -80,7 +80,7 @@ function kron_sandwich(F::AbstractMatrix, n::Int, k1::Int, k2::Int)
         AFC = AF
     else
         C = kron_id(n, k2)
-        AFC = kron(AF, C)
+        AFC = LinearAlgebra.kron(AF, C)
     end
 
     return AFC
@@ -185,7 +185,7 @@ function kron_pow(x::Vector{<:AbstractVariable}, pow::Int)
     if pow == 1
         return x
     else
-        return kron(x, kron_pow(x, pow - 1))
+        return LinearAlgebra.kron(x, kron_pow(x, pow - 1))
     end
 end
 
