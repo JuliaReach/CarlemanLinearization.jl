@@ -1,9 +1,12 @@
 using Test, CarlemanLinearization
-using DynamicPolynomials, MultivariatePolynomials
+using DynamicPolynomials, MultivariatePolynomials, LinearAlgebra
 
 using LazySets: Hyperrectangle, low, high
-using CarlemanLinearization: generate_monomials, build_matrix, kron_pow,
-                             quadratic_matrix_form, lift_vector
+using CarlemanLinearization: generate_monomials, _build_matrix_N
+
+@testset "Kronecker power of identity matrix" begin
+    @test kron_id(2, 3) == Diagonal(ones(8))
+end
 
 @testset "Kronecker power (symbolic)" begin
     @polyvar x[1:2]
@@ -12,6 +15,33 @@ using CarlemanLinearization: generate_monomials, build_matrix, kron_pow,
     @test findall(==(x[1]^2), y) == [1]
     @test findall(==(x[2]^2), y) == [4]
     @test findall(==(x[2]^3), y) == Int[]
+end
+
+@testset "Kronecker sandwich I^{⊗ l} ⊗ F ⊗ I^{⊗ r}" begin
+    F = [0 1; -1 0.0]
+    I2 = I(2)
+
+    Q = kron_sandwich(F, 2, 2, 2)
+    @test size(Q) == (32, 32)
+    @test reduce(kron, [I2, I2, F, I2, I2]) == Q
+
+    Q = kron_sandwich(F, 2, 0, 2)
+    @test size(Q) == (8, 8)
+    @test reduce(kron, [F, I2, I2]) == Q
+
+    Q = kron_sandwich(F, 2, 2, 0)
+    @test size(Q) == (8, 8)
+    @test reduce(kron, [I2, I2, F]) == Q
+end
+
+@testset "Kronecker sum" begin
+    F = [0 1; -1 0.0]
+    I2 = I(2)
+    @test_throws ArgumentError kron_sum(F, 0)
+    @test kron_sum(F, 1) == F
+    @test kron_sum(F, 2) == kron(F, I2) + kron(I2, F)
+    @test kron_sum(F, 3) ==
+          sum(reduce(kron, X) for X in [[F, I2, I2], [I2, F, I2], [I2, I2, F]])
 end
 
 @testset "Conversion from polynomial to matrix representation" begin
@@ -46,12 +76,34 @@ end
     result = build_matrix(F1, F2, 1; compress=true)
     @test result == F1
 
+    @test_throws ArgumentError build_matrix(F1, F2, 0; compress=true)
+
     result = build_matrix(F1, F2, 2; compress=true)
     @test result == [3.0 0.0 0.0 0.0 1.0;
                      1.0 -1.0 1.0 -2.2 0;
                      0 0 6.0 0 0;
                      0 0 1.0 -1.0 0;
                      0 0 0 2.0 -2.0]
+
+    result = build_matrix(F1, F2, 2; compress=false)
+    @test result == [kron_sum(F1, 1) kron_sum(F2, 1);
+                     zeros(4, 2) kron_sum(F1, 2)]
+
+    result = build_matrix(F1, F2, 3; compress=false)
+    @test result == [kron_sum(F1, 1) kron_sum(F2, 1) zeros(2, 8);
+                     zeros(4, 2) kron_sum(F1, 2) kron_sum(F2, 2);
+                     zeros(8, 6) kron_sum(F1, 3)]
+    @test result == _build_matrix_N(F1, F2, 3)
+
+    result = build_matrix(F1, F2, 4; compress=false)
+    @test result == [kron_sum(F1, 1) kron_sum(F2, 1) zeros(2, 24);
+                     zeros(4, 2) kron_sum(F1, 2) kron_sum(F2, 2) zeros(4, 16);
+                     zeros(8, 6) kron_sum(F1, 3) kron_sum(F2, 3);
+                     zeros(16, 14) kron_sum(F1, 4)]
+    @test result == _build_matrix_N(F1, F2, 4)
+
+    result = build_matrix(F1, F2, 5; compress=false)
+    @test size(result) == (62, 62)
 end
 
 @testset "Lifting vectors" begin
