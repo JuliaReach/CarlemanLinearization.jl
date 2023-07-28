@@ -27,7 +27,7 @@ function error_bound_apriori(α, F₁, F₂; N)
 end
 
 # See Theorem 4.2 in [1]
-function convergence_radius_apriori(α, F₁, F₂; N)
+function convergence_radius_apriori(α, F₁, F₂)
     nF₂ = opnorm(F₂, Inf)
     μF₁ = logarithmic_norm(F₁, Inf)
 
