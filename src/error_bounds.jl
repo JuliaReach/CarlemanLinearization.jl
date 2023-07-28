@@ -3,7 +3,7 @@
 #
 # References:
 #
-# - [1] Forets, Marcelo, and Amaury Pouly. "Explicit error bounds for carleman linearization."
+# - [1] Forets, Marcelo, and Amaury Pouly. "Explicit error bounds for Carleman linearization."
 #       arXiv preprint arXiv:1711.02552 (2017).
 #
 # - [2] Liu, J. P., Kolden, H. Ø., Krovi, H. K., Loureiro, N. F., Trivisa, K., & Childs,7
@@ -34,7 +34,7 @@ function convergence_radius_apriori(α, F₁, F₂; N)
     if μF₁ < 0
         return Inf
     end
-    β = α * F₂ / μF₁
+    β = α * nF₂ / μF₁
     T = (1 / μF₁) * log(1 + 1 / β)
     return T
 end
