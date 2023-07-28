@@ -115,3 +115,22 @@ end
           Set{Tuple{Rational,Rational}}([(0, 1), (1, 2), (-1, 3), (0, 1), (1, 4), (0, 9), (0, 2),
                                          (-1, 3), (-2, 6)])
 end
+
+@testset "Error bounds" begin
+    F1_neg = [-2.0 -1; -1 -2]
+    F1 = [0.0 1; -1 -2]
+    F2 = [0.0 0 0 1; 1 -2.2 0 0]
+    α = 0.1
+
+    T = convergence_radius_apriori(α, F1_neg, F2)
+    @test T == Inf
+
+    T = convergence_radius_apriori(α, F1, F2)
+    @test T ≈ 1.417 atol=1e-4
+
+    e2 = error_bound_apriori(α, F1, F2; N=2)
+    e3 = error_bound_apriori(α, F1, F2; N=3)
+    for t in 0.01:0.01:T
+        @test e3(t) < e2(t)
+    end
+end
