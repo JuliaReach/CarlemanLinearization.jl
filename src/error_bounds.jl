@@ -74,8 +74,8 @@ function _error_bound_specabs_R(x₀, F₁, F₂; check=true)
     λ = eigvals(F₁; sortby=real)
     λ₁ = last(λ)
     Re_λ₁ = real(λ₁)
-    if check
-        @assert Re_λ₁ <= 0 "expected Re(λ₁) ≤ 0, got $Re_λ₁"
+    if check && Re_λ₁ > 0
+        throw(ArgumentError("expected Re(λ₁) ≤ 0, got $Re_λ₁"))
     end
     R = nx₀ * nF₂ / abs(Re_λ₁)
     return (R, Re_λ₁)
@@ -83,9 +83,9 @@ end
 
 # See Lemma 2 in [2]
 function error_bound_specabs(x₀, F₁, F₂; N, check=true)
-    (R, Re_λ₁) = _error_bound_specabs_R(x₀, F₁, F₂; check=check)
-    if check
-        @assert R < 1 "expected R < 1, got R = $R; try scaling the ODE"
+    R, Re_λ₁ = _error_bound_specabs_R(x₀, F₁, F₂; check=check)
+    if check && R >= 1
+        throw(ArgumentError("expected R < 1, got R = $R; try scaling the ODE"))
     end
 
     nx₀ = norm(x₀, 2)
@@ -100,7 +100,7 @@ end
 
 # See Lemma 2 in [2]
 function convergence_radius_specabs(x₀, F₁, F₂; check=true)
-    (R, Re_λ₁) = _error_bound_specabs_R(x₀, F₁, F₂; check=check)
+    _, Re_λ₁ = _error_bound_specabs_R(x₀, F₁, F₂; check=check)
 
     if Re_λ₁ < 0
         T = Inf
