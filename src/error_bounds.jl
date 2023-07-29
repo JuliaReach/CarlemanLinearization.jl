@@ -53,7 +53,7 @@ function error_bound_pseries(x₀, F₁, F₂; N)
 end
 
 # See Theorem 4.3 in [1].
-function convergence_radius_pseries(x₀, F₁, F₂; N)
+function convergence_radius_pseries(x₀, F₁, F₂)
     nx₀ = norm(x₀, Inf)
     nF₁ = opnorm(F₁, Inf)
     nF₂ = opnorm(F₂, Inf)
