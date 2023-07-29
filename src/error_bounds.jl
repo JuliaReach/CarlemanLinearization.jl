@@ -65,25 +65,29 @@ end
 
 # --- Error bounds using spectral abscissa from [2] ---
 
-# See Definition (2.2) in [2]. These bounds use the spectral norm (p = 2)
-function _error_bound_specabs_R(x₀, F₁, F₂; check=true)
-    nx₀ = norm(x₀, 2)
-    nF₂ = opnorm(F₂, 2)
-
-    # compute eigenvalues and sort them by increasing real part
+# compute eigenvalues and sort them by increasing real part
+function _error_bound_specabs_Re_λ₁(F₁; check=true)
     λ = eigvals(F₁; sortby=real)
     λ₁ = last(λ)
     Re_λ₁ = real(λ₁)
     if check && Re_λ₁ > 0
         throw(ArgumentError("expected Re(λ₁) ≤ 0, got $Re_λ₁"))
     end
-    R = nx₀ * nF₂ / abs(Re_λ₁)
-    return (R, Re_λ₁)
+    return Re_λ₁
 end
 
-# See Lemma 2 in [2]
+# See Definition (2.2) in [2]. These bounds use the spectral norm (p = 2)
+function _error_bound_specabs_R(x₀, F₂, Re_λ₁)
+    nx₀ = norm(x₀, 2)
+    nF₂ = opnorm(F₂, 2)
+    R = nx₀ * nF₂ / abs(Re_λ₁)
+    return R
+end
+
+# See Corollary 1 in [2]
 function error_bound_specabs(x₀, F₁, F₂; N, check=true)
-    R, Re_λ₁ = _error_bound_specabs_R(x₀, F₁, F₂; check=check)
+    Re_λ₁ = _error_bound_specabs_Re_λ₁(F₁; check=check)
+    R = _error_bound_specabs_R(x₀, F₂, Re_λ₁)
     if check && R >= 1
         throw(ArgumentError("expected R < 1, got R = $R; try scaling the ODE"))
     end
@@ -98,9 +102,9 @@ function error_bound_specabs(x₀, F₁, F₂; N, check=true)
     return ε
 end
 
-# See Lemma 2 in [2]
+# See Corollary 1 in [2]
 function convergence_radius_specabs(x₀, F₁, F₂; check=true)
-    _, Re_λ₁ = _error_bound_specabs_R(x₀, F₁, F₂; check=check)
+    Re_λ₁ = _error_bound_specabs_Re_λ₁(F₁; check=check)
 
     if Re_λ₁ < 0
         T = Inf
