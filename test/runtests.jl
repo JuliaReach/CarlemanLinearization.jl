@@ -115,3 +115,63 @@ end
           Set{Tuple{Rational,Rational}}([(0, 1), (1, 2), (-1, 3), (0, 1), (1, 4), (0, 9), (0, 2),
                                          (-1, 3), (-2, 6)])
 end
+
+@testset "Error bounds" begin
+    F1 = [0.0 1; -1 -2]
+    F2 = [0 0 0 1; 1 -2.2 0 0]
+    x0 = 0.1
+
+    # error bounds using power-series method
+
+    T = convergence_radius_pseries(x0, F1, F2)
+    @test T ≈ 0.7797 atol = 1e-4
+
+    e2 = error_bound_pseries(x0, F1, F2; N=2)
+    e3 = error_bound_pseries(x0, F1, F2; N=3)
+    for t in 0.01:0.01:T
+        @test e3(t) < e2(t)
+    end
+
+    # error bounds using spectral abscissa
+
+    # convergence everywhere (T = Inf)
+    T = convergence_radius_specabs(x0, F1, F2)
+    @test T == Inf
+
+    e2 = error_bound_specabs(x0, F1, F2; N=2)
+    e3 = error_bound_specabs(x0, F1, F2; N=3)
+    for t in 0.01:0.01:1
+        @test e3(t) < e2(t)
+    end
+
+    # R >= 1
+    @test_throws ArgumentError error_bound_specabs(5 * x0, F1, F2; N=1)
+
+    # Re_λ₁ = 0
+    F1_zero = [0.0 0; 0 -1]
+    T = convergence_radius_specabs(x0, F1_zero, F2)
+
+    @test_throws ArgumentError error_bound_specabs(x0, F1_zero, F2; N=2)
+
+    # Re_λ₁ > 0
+    F1_pos = [0.0 0; 0 1]
+    @test_throws ArgumentError convergence_radius_specabs(x0, F1_pos, F2)
+    @test_throws ArgumentError convergence_radius_specabs(x0, F1_pos, F2; check=false)
+
+    F1_neg = [-2.0 -1; -1 -2]
+    F1 = [0.0 1; -1 -2]
+    F2 = [0.0 0 0 1; 1 -2.2 0 0]
+    α = 0.1
+
+    T = convergence_radius_apriori(α, F1_neg, F2)
+    @test T == Inf
+
+    T = convergence_radius_apriori(α, F1, F2)
+    @test T ≈ 1.417 atol=1e-4
+
+    e2 = error_bound_apriori(α, F1, F2; N=2)
+    e3 = error_bound_apriori(α, F1, F2; N=3)
+    for t in 0.01:0.01:T
+        @test e3(t) < e2(t)
+    end
+end
