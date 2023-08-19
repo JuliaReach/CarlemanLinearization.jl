@@ -167,7 +167,7 @@ end
     @test T == Inf
 
     T = convergence_radius_apriori(α, F1, F2)
-    @test T ≈ 1.417 atol=1e-4
+    @test T ≈ 1.417 atol = 1e-4
 
     e2 = error_bound_apriori(α, F1, F2; N=2)
     e3 = error_bound_apriori(α, F1, F2; N=3)
