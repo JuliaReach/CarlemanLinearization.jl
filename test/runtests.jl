@@ -64,7 +64,7 @@ end
         # Nonnegativity
         @test all([sum(m) == sum(map(abs, m)) for m in monomials])
         # ordering
-        @test all([sum(monomials[i - 1]) <= sum(monomials[i]) for i in 2:length(monomials)])
+        @test all([sum(monomials[i]) <= sum(monomials[i + 1]) for i in 1:(length(monomials) - 1)])
         # not exceeding D
         @test sum(monomials[end]) == D
     end
