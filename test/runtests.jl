@@ -175,3 +175,5 @@ end
         @test e3(t) < e2(t)
     end
 end
+
+include("Aqua.jl")
