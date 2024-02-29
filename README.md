@@ -7,7 +7,7 @@
 [dev-img]: https://img.shields.io/badge/docs-latest-blue.svg
 [dev-url]: https://juliareach.github.io/CarlemanLinearization.jl/dev/
 [ci-img]: https://github.com/JuliaReach/CarlemanLinearization.jl/workflows/CI/badge.svg
-[ci-url]: https://github.com/JuliaReach/CarlemanLinearization.jl/actions/workflows/ci.yml
+[ci-url]: https://github.com/JuliaReach/CarlemanLinearization.jl/actions/workflows/test-master.yml
 [cov-img]: https://codecov.io/github/JuliaReach/CarlemanLinearization.jl/coverage.svg
 [cov-url]: https://app.codecov.io/github/JuliaReach/CarlemanLinearization.jl
 [aqua-img]: https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg
