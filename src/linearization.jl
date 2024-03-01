@@ -138,7 +138,7 @@ function generate_monomials(n, N)
     return result
 end
 
-function _build_matrix_N1(F₁, F₂)
+function _build_matrix_N1(F₁, _)
     return F₁
 end
 

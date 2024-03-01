@@ -131,11 +131,11 @@ function kron_sum(F::AbstractMatrix, k::Int)
         return F
     end
 
-    n = size(F, 1) # leading dimension
-    k1 = 0 # terms on the left of F
-    k2 = k - 1 # terms on the right of F
+    n = size(F, 1)  # leading dimension
+    k1 = 0  # terms on the left of F
+    k2 = k - 1  # terms on the right of F
     A = kron_sandwich(F, n, k1, k2)  # I^(⊗k1) ⊗ F ⊗ I^(⊗k2)
-    for i in 2:k
+    for _ in 1:k2
         k1 += 1
         k2 -= 1
         B = kron_sandwich(F, n, k1, k2)
