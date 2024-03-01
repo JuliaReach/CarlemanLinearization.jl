@@ -104,8 +104,7 @@ end
 Return a vector of monomials in `X0` (hyperrectangle) of degree at most `N`.
 """
 function lift_vector(X0, N)
-    @assert isdefined(@__MODULE__, :LazySets) "package `LazySets` not loaded (it is required " *
-                                              "for executing `lift_vector`)"
+    require(@__MODULE__, :LazySets; fun_name="lift_vector")
 
     monoms = generate_monomials(dim(X0), N)
     nonfirst_monoms = firstrest(monoms)[2]
@@ -168,27 +167,27 @@ function _build_matrix_N4(F₁, F₂)
 end
 
 function _build_matrix_N(F₁, F₂, N)
-    @assert N >= 3 "expected N to be at least 3, got N=$N"
+    @assert N >= 3 "expected N to be at least 3, got N = $N"
     n = size(F₁, 1)
 
-    out = Vector{typeof(F₁)}()
+    out = Vector{typeof(F₁)}(undef, N)
     for j in 1:N
         if j == N
             F12_j = kron_sum(F₁, j)
             Zleft_j = spzeros(n^j, sum(n^i for i in 1:(j - 1)))
-            push!(out, hcat(Zleft_j, F12_j))
+            out[j] = hcat(Zleft_j, F12_j)
         else
             F12_j = hcat(kron_sum(F₁, j), kron_sum(F₂, j))
             if j == 1
                 Zright_j = spzeros(n^j, sum(n^i for i in (j + 2):N))
-                push!(out, hcat(F12_j, Zright_j))
+                out[j] = hcat(F12_j, Zright_j)
             elseif j == N - 1
                 Zleft_j = spzeros(n^j, sum(n^i for i in 1:(j - 1)))
-                push!(out, hcat(Zleft_j, F12_j))
+                out[j] = hcat(Zleft_j, F12_j)
             else # general case
                 Zleft_j = spzeros(n^j, sum(n^i for i in 1:(j - 1)))
                 Zright_j = spzeros(n^j, sum(n^i for i in (j + 2):N))
-                push!(out, hcat(Zleft_j, F12_j, Zright_j))
+                out[j] = hcat(Zleft_j, F12_j, Zright_j)
             end
         end
     end

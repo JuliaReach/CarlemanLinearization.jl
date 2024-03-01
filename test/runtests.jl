@@ -57,11 +57,11 @@ end
 @testset "Generating all commutative monomials" begin
     for (n, D) in [(3, 0), (3, 1), (3, 2), (5, 3), (5, 10)]
         monomials = generate_monomials(n, D)
-        # No repetitions
+        # no repetitions
         @test length(monomials) == length(Set(monomials))
-        # Correct size
+        # correct size
         @test length(monomials) == binomial(n + D, n)
-        # Nonnegativity
+        # nonnegativity
         @test all([sum(m) == sum(map(abs, m)) for m in monomials])
         # ordering
         @test all([sum(monomials[i]) <= sum(monomials[i + 1]) for i in 1:(length(monomials) - 1)])
