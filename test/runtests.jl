@@ -1,5 +1,5 @@
 using Test, CarlemanLinearization
-using DynamicPolynomials, MultivariatePolynomials, LinearAlgebra
+using DynamicPolynomials, LinearAlgebra
 
 using LazySets: Hyperrectangle, low, high
 using CarlemanLinearization: generate_monomials, _build_matrix_N
