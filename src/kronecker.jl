@@ -10,7 +10,7 @@ Compute the k-fold Kronecker product of the identity: `I ⊗ I ⊗ ... ⊗ I`, k
 
 ### Output
 
-A `Diagonal` matrix with element `1` in the diagonal and order ``n^k``.
+An identity matrix of order ``n^k`` and type `Diagonal`.
 
 ### Examples
 

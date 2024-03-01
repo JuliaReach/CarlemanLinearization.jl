@@ -1,4 +1,4 @@
-# Kronecker power utils
+# Kronecker power
 export kron_id,
        kron_sandwich,
        kron_sum,
