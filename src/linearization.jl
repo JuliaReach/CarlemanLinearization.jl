@@ -58,7 +58,7 @@ function build_matrix_compressed(F₁, F₂, N)
     n = size(F₁)[1]
     monoms = generate_monomials(n, N)
     # skip the first monomial, which is always the constant 1
-    nonfirst_monoms = firstrest(monoms)[2]
+    nonfirst_monoms = Iterators.peel(monoms)[2]
     monom_to_ind = Dict(m => i for (i, m) in enumerate(nonfirst_monoms))
     result = spzeros(length(monoms) - 1, length(monoms) - 1)
     # linear/quadratic monomials on the right-hand side
@@ -107,7 +107,7 @@ function lift_vector(X0, N)
     require(@__MODULE__, :LazySets; fun_name="lift_vector")
 
     monoms = generate_monomials(dim(X0), N)
-    nonfirst_monoms = firstrest(monoms)[2]
+    nonfirst_monoms = Iterators.peel(monoms)[2]
     result = []
     intervals = [interval(low(X0, i), high(X0, i)) for i in 1:dim(X0)]
     for m in nonfirst_monoms
