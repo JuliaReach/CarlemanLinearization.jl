@@ -1,4 +1,4 @@
-using IterTools, LinearAlgebra, Requires, SparseArrays
+using LinearAlgebra, Requires, SparseArrays
 
 using MultivariatePolynomials: AbstractVariable, AbstractMonomialLike, exponents, variables, powers,
                                monomials, coefficient
