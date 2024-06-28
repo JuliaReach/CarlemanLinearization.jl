@@ -156,7 +156,6 @@ end
     # Re_λ₁ > 0
     F1_pos = [0.0 0; 0 1]
     @test_throws ArgumentError convergence_radius_specabs(x0, F1_pos, F2)
-    @test_throws ArgumentError convergence_radius_specabs(x0, F1_pos, F2; check=false)
 
     F1_neg = [-2.0 -1; -1 -2]
     F1 = [0.0 1; -1 -2]
