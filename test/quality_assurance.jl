@@ -7,7 +7,9 @@ import Pkg
     import ExplicitImports
 
     @testset "ExplicitImports tests" begin
-        @test isnothing(ExplicitImports.check_all_explicit_imports_are_public(CarlemanLinearization))
+        ignores = (:generate_monomials,)  # false positive due to package extensions
+        @test isnothing(ExplicitImports.check_all_explicit_imports_are_public(CarlemanLinearization;
+                                                                              ignore=ignores))
         @test isnothing(ExplicitImports.check_all_explicit_imports_via_owners(CarlemanLinearization))
         @test isnothing(ExplicitImports.check_all_qualified_accesses_are_public(CarlemanLinearization))
         @test isnothing(ExplicitImports.check_all_qualified_accesses_via_owners(CarlemanLinearization))
