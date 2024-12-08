@@ -10,9 +10,23 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
+IntervalArithmetic = "0.15 - 0.21"
+LazySets = "1, 2, 3"
 LinearAlgebra = "<0.0.1, 1.4"
 MultivariatePolynomials = "0.3, 0.4, 0.5"
 ReachabilityBase = "0.2, 0.3"
 Requires = "0.5, 1"
 SparseArrays = "<0.0.1, 1.4"
 julia = "1.4"
+
+[extensions]
+LazySetsExt = ["IntervalArithmetic", "LazySets"]
+
+[extras]
+IntervalArithmetic = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
+LazySets = "b4f0291d-fe17-52bc-9479-3d1a343d9043"
+
+[weakdeps]
+IntervalArithmetic = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
+LazySets = "b4f0291d-fe17-52bc-9479-3d1a343d9043"
+Requires = "ae029012-a4dd-5104-9daa-d747884805df"
