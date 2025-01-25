@@ -6,8 +6,8 @@ differential equations in Julia.
 The following methods are available:
 
 - Construction of the Carleman embedding using sparse matrices
-- Explicit error bounds [FP17]
-- Improved error bounds for dissipative systems [FP17]
+- Explicit error bounds [ForetsP17](@cite)
+- Improved error bounds for dissipative systems [ForetsP17](@cite)
 
 ## Example
 
