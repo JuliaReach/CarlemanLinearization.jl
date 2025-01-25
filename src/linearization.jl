@@ -21,7 +21,7 @@ Sparse matrix `A`.
 
 ### Algorithm
 
-See references [1] and [2] of CARLIN.md.
+See [ForetsP17](@citet) and [LiuKKLTC21](@citet).
 """
 function build_matrix(F₁, F₂, N; compress=false)
     F₁ = sparse(F₁)
