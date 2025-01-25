@@ -3,20 +3,17 @@
 #
 # References:
 #
-# - [1] Forets, Marcelo, and Amaury Pouly. "Explicit error bounds for Carleman linearization."
-#       arXiv preprint arXiv:1711.02552 (2017).
+# - [ForetsP17](@citet)
 #
-# - [2] Liu, J. P., Kolden, H. Ø., Krovi, H. K., Loureiro, N. F., Trivisa, K., & Childs,7
-#       A. M. (2021). "Efficient quantum algorithm for dissipative nonlinear differential equations."
-#       Proceedings of the National Academy of Sciences, 118(35). arXiv preprint arXiv:2011.03185.
+# - [LiuKKLTC21](@citet)
 #
 # =========================================================================================================================
 
-# --- Error bounds using a priori estimate from [1] ---
+# --- Error bounds using a priori estimate from [ForetsP17](@citet) ---
 # These bounds use the supremum norm (p = Inf).
 
-# see Theorem 4.2 in [1]; this bound is based on an a priori estimate
-# of the norm of the exact solution x(t)
+# See [ForetsP17; Theorem 4.2](@citet); this bound is based on an a priori
+# estimate of the norm of the exact solution x(t).
 function error_bound_apriori(α, F₁, F₂; N)
     nF₂ = opnorm(F₂, Inf)
     μF₁ = logarithmic_norm(F₁, Inf)
@@ -26,7 +23,7 @@ function error_bound_apriori(α, F₁, F₂; N)
     return ε
 end
 
-# see Theorem 4.2 in [1]
+# See [ForetsP17; Theorem 4.2](@citet).
 function convergence_radius_apriori(α, F₁, F₂)
     nF₂ = opnorm(F₂, Inf)
     μF₁ = logarithmic_norm(F₁, Inf)
@@ -39,9 +36,9 @@ function convergence_radius_apriori(α, F₁, F₂)
     return T
 end
 
-# --- Error bounds using power series method from [1] ---
+# --- Error bounds using power series method from [ForetsP17](@citet) ---
 
-# see Theorem 4.3 in [1], which uses the power series method
+# See [ForetsP17; Theorem 4.3](@citet), which uses the power series method.
 function error_bound_pseries(x₀, F₁, F₂; N)
     nx₀ = norm(x₀, Inf)
     nF₁ = opnorm(F₁, Inf)
@@ -52,7 +49,7 @@ function error_bound_pseries(x₀, F₁, F₂; N)
     return ε
 end
 
-# see Theorem 4.3 in [1]
+# See [ForetsP17; Theorem 4.3](@citet).
 function convergence_radius_pseries(x₀, F₁, F₂)
     nx₀ = norm(x₀, Inf)
     nF₁ = opnorm(F₁, Inf)
@@ -63,7 +60,7 @@ function convergence_radius_pseries(x₀, F₁, F₂)
     return T
 end
 
-# --- Error bounds using spectral abscissa from [2] ---
+# --- Error bounds using spectral abscissa from [LiuKKLTC21](@citet) ---
 # These bounds use the spectral norm (p = 2).
 
 # compute eigenvalues and sort them by increasing real part
@@ -72,7 +69,7 @@ function _error_bound_specabs_Re_λ₁(F₁)
     return real(last(λ))
 end
 
-# see Corollary 1 in [2]
+# See [LiuKKLTC21; Corollary 1](@citet).
 function error_bound_specabs(x₀, F₁, F₂; N, check=true)
     Re_λ₁ = _error_bound_specabs_Re_λ₁(F₁)
     if check && Re_λ₁ >= 0
@@ -92,7 +89,7 @@ function error_bound_specabs(x₀, F₁, F₂; N, check=true)
     return ε
 end
 
-# see Corollary 1 in [2]
+# See [LiuKKLTC21; Corollary 1](@citet).
 function convergence_radius_specabs(x₀, F₁, F₂)
     Re_λ₁ = _error_bound_specabs_Re_λ₁(F₁)
 
