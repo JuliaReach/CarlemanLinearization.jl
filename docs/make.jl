@@ -12,8 +12,6 @@ makedocs(; sitename="CarlemanLinearization.jl",
          pagesonly=true,
          plugins=[bib],
          pages=["Home" => "index.md",
-                "API Reference" => Any["Linearization" => "lib/linearization.md",
-                                       "Error bounds" => "lib/errors.md"],
                 "Bibliography" => "bibliography.md",
                 "About" => "about.md"])
 
