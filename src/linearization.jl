@@ -113,7 +113,7 @@ function lift_vector(X0, N)
     for m in nonfirst_monoms
         push!(result, prod(intervals .^ m))
     end
-    return Hyperrectangle(; low=[i.lo for i in result], high=[i.hi for i in result])
+    return Hyperrectangle(; low=[inf(i) for i in result], high=[sup(i) for i in result])
 end
 
 """
