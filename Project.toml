@@ -1,6 +1,6 @@
 name = "CarlemanLinearization"
 uuid = "4803f6b2-022a-4c1b-a771-522a3413ec86"
-version = "0.4.0"
+version = "0.4.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
