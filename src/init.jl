@@ -1,9 +1,10 @@
-using LinearAlgebra, Requires, SparseArrays
+using LinearAlgebra: /, Diagonal, eigvals, kron, norm, opnorm
+using SparseArrays: findnz, sparse, spzeros
+using Requires: @require
 
-using MultivariatePolynomials: AbstractVariable, AbstractMonomialLike, exponents, variables, powers,
-                               monomials, coefficient
+using MultivariatePolynomials: AbstractVariable, monomials, coefficient
 using ReachabilityBase.Arrays: logarithmic_norm
-using ReachabilityBase.Require
+using ReachabilityBase.Require: require
 
 function __init__()
     @require LazySets = "b4f0291d-fe17-52bc-9479-3d1a343d9043" begin
