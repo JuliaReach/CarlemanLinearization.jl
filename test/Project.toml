@@ -10,8 +10,10 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Aqua = "0.8.9"
 DynamicPolynomials = "0.3, 0.4, 0.5, 0.6"
 ExplicitImports = "1"
+JET = "0.11"
 LazySets = "1, 2, 3, 4, 5, 6"
 Pkg = "<0.0.1, 1.4"
 
 [extras]
 ExplicitImports = "7d51a73a-1435-4ff3-83d9-f097790105c7"
+JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
