@@ -47,18 +47,20 @@ function build_matrix(F₁, F₂, N; compress=false)
 end
 
 """
-    build_matrix_compressed(F₁, F₂, N)
+    build_matrix_compressed(F₁::AbstractMatrix, F₂::AbstractMatrix, N::Int)
 
 Compute the compressed Carleman linearization matrix associated to the quadratic
 system ``x' = F₁x + F₂(x⊗x)``, truncated at order ``N``.
 
 Input & Output are the same as for `build_matrix`.
 """
-function build_matrix_compressed(F₁, F₂, N)
+function build_matrix_compressed(F₁::AbstractMatrix, F₂::AbstractMatrix, N::Int)
     n = size(F₁)[1]
     monoms = generate_monomials(n, N)
     # skip the first monomial, which is always the constant 1
-    nonfirst_monoms = Iterators.peel(monoms)[2]
+    res = Iterators.peel(monoms)
+    @assert res !== nothing "need at least two monomials"
+    nonfirst_monoms = res[2]
     monom_to_ind = Dict(m => i for (i, m) in enumerate(nonfirst_monoms))
     result = spzeros(length(monoms) - 1, length(monoms) - 1)
     # linear/quadratic monomials on the right-hand side
@@ -111,7 +113,7 @@ end
 Return a list of `n`-tuples of nonegative integers with the sum at most `N`,
 ordered by the total degree (no other guarantees on the ordering).
 """
-function generate_monomials(n, N)
+function generate_monomials(n::Int, N::Int)
     if n == 1
         return [(i,) for i in 0:N]
     end
