@@ -19,6 +19,16 @@ import Pkg
     end
 end
 
+@static if VERSION >= v"1.12"  # TODO make explicit test requirement
+    # JET v0.11 requires Julia v1.12
+    Pkg.add("JET")
+    import JET
+
+    @testset "JET tests" begin
+        JET.test_package(CarlemanLinearization)
+    end
+end
+
 @testset "Aqua tests" begin
     Aqua.test_all(CarlemanLinearization)
 end
