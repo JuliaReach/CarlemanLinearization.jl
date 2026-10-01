@@ -1,4 +1,5 @@
-using LinearAlgebra: /, Diagonal, eigvals, kron, norm, opnorm
+using Base: /, kron
+using LinearAlgebra: Diagonal, eigvals, norm, opnorm
 using SparseArrays: findnz, sparse, spzeros
 
 using MultivariatePolynomials: AbstractVariable, monomials, coefficient
