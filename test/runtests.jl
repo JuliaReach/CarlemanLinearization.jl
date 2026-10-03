@@ -1,6 +1,10 @@
 using Test, CarlemanLinearization
 using DynamicPolynomials, LinearAlgebra
 
+@testset "Warning about missing optional dependencies" begin
+    @test_throws AssertionError lift_vector(1, 1)
+end
+
 using LazySets: Hyperrectangle, low, high
 using CarlemanLinearization: generate_monomials, _build_matrix_N
 
