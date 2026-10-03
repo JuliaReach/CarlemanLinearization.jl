@@ -102,7 +102,7 @@ function lift_vector(X0, N)
     mod = isdefined(Base, :get_extension) ?
           Base.get_extension(@__MODULE__, :LazySetsExt) : @__MODULE__
     require(mod, :LazySets; fun_name="lift_vector")
-    return nothing
+    return nothing  # COV_EXCL_LINE
 end
 
 """
