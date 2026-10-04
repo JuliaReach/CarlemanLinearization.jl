@@ -2,7 +2,9 @@ using Test, CarlemanLinearization
 using DynamicPolynomials, LinearAlgebra
 
 @testset "Warning about missing optional dependencies" begin
-    @test_throws AssertionError lift_vector(1, 1)
+    if !isdefined(@__MODULE__, :Hyperrectangle)
+        @test_throws AssertionError lift_vector(1, 1)
+    end
 end
 
 using LazySets: Hyperrectangle, low, high
